@@ -35,8 +35,8 @@
   },
   "homepage": "https://github.com/Emethium/nest-api-example",
   "dependencies": {
-    "@nestjs/common": "^6.10.14",
-    "@nestjs/core": "^6.10.14",
+    "@nestjs/common": "^7.6.15",
+    "@nestjs/core": "^7.6.15",
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/mapped-types": "^1.0.1",
     "@nestjs/passport": "^8.2.1",
@@ -58,9 +58,9 @@
     "typeorm": "^0.2.22"
   },
   "devDependencies": {
-    "@nestjs/cli": "^6.13.2",
-    "@nestjs/schematics": "^6.8.1",
-    "@nestjs/testing": "^6.10.14",
+    "@nestjs/cli": "^7.6.0",
+    "@nestjs/schematics": "^7.3.0",
+    "@nestjs/testing": "^7.6.15",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.2",
     "@types/jest": "25.1.1",
@@ -108,5 +108,10 @@
   "engines": {
     "node": "16.16.0",
     "npm": "8.11.0"
-  }
+  },
+  "main": ".eslintrc.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": []
 }
