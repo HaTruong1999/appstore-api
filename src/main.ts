@@ -17,7 +17,7 @@ async function bootstrap() {
 
   // Kiểm tra đầu vào(pipes)
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  const port = process.env.PORT || 3001
-  await app.listen(port);
+  const PORT = process.env.PORT || 3001
+  await app.listen(PORT);
 }
 bootstrap();
