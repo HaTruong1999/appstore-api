@@ -53,4 +53,10 @@ export class Apps{
 
     @Column("varchar", { name: "app_created_by", nullable: true, length: 500 })
     appCreatedBy: string | null;
+
+    @Column("datetime", { name: "app_updated_date", nullable: true})
+    appUpdatedDate: Date | null;
+
+    @Column("varchar", { name: "app_updated_by", nullable: true, length: 500 })
+    appUpdatedBy: string | null;
 }

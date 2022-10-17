@@ -52,4 +52,10 @@ export class AppsDto {
     @ApiProperty()
     appCreatedBy: string | null;
 
+    @ApiProperty()
+    appUpdatedDate: Date | null;
+
+    @ApiProperty()
+    appUpdatedBy: string | null;
+
   }

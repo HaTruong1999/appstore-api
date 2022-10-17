@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Request, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseInterceptors } from '@nestjs/common';
 import { Pagination, PaginationRequestDto } from 'src/common/pagination';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsService } from './apps.service';
@@ -30,7 +30,6 @@ export class AppsController {
     return this.appsService.create(appsData, req.userId);
   }
 
-  
   @Get()
   @ApiPaginatedResponse(AppsDto)
   async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Apps>>{
@@ -43,8 +42,20 @@ export class AppsController {
     description: 'The found record',
     type: AppsDto
   })
+
   async findOne(@Param('id') id : number){
     return this.appsService.findOne(id);
   }
+
+  @Put(':id/update')
+  async update(@Param('id') id, @Body() entityData: Apps, @Request() req): Promise<any> {
+      entityData.appId = Number(id);
+      return this.appsService.update(entityData, req.userId);
+  }
+
+  @Delete(':id/delete')
+    async delete(@Param('id') id): Promise<any> {
+      return this.appsService.delete(id);
+  }  
 
 }

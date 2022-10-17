@@ -16,9 +16,9 @@ export class ApptypesService {
   ) { }
 
   async findAll(pagination: AppTypesRequestDto): Promise<Pagination<AppTypes>>{
-    let search = pagination.search != null ? "%" + pagination.search.replace(' ', '%') + '%' : '';
+    const search = pagination.search != null ? "%" + pagination.search.replace(' ', '%') + '%' : '';
         let filters = {};
-        let listF = [];
+        const listF = [];
         //Có tìm kiếm
         if(search != '')
         {
@@ -48,7 +48,7 @@ export class ApptypesService {
     return await this.apptypesRepository.save(entity);
   }
 
-  async update(entity: AppTypes, updatedBy): Promise<UpdateResult> {
+  async update(entity: AppTypes, updatedBy: string): Promise<UpdateResult> {
     entity.atUpdatedDate = new Date();
     entity.atUpdatedBy = updatedBy;
     return await this.apptypesRepository.update(entity.atId, entity)

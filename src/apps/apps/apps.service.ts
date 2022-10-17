@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'src/common/pagination';
-import { Like, Repository } from 'typeorm';
+import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsRequestDto } from './dto/apps-request.dto';
 
@@ -20,9 +20,9 @@ export class AppsService {
     }
 
     async findAll(pagination: AppsRequestDto): Promise<Pagination<Apps>>{
-        let search = pagination.search != null ? "%" + pagination.search.replace(' ', '%') + '%' : '';
+        const search = pagination.search != null ? "%" + pagination.search.replace(' ', '%') + '%' : '';
         let filters = {};
-        let listF = [];
+        const listF = [];
         //Có tìm kiếm
         if(search != '')
         {
@@ -42,7 +42,18 @@ export class AppsService {
           orders = JSON.parse(pagination.sort);
         return paginate<Apps>(this.appsRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
     }
+
     async findOne(id : number){
       return this.appsRepository.findOne(id);
+    }
+
+    async update(entity: Apps, updatedBy: string): Promise<UpdateResult> {
+      entity.appUpdatedDate = new Date();
+      entity.appUpdatedBy = updatedBy;
+      return await this.appsRepository.update(entity.appId, entity)
+    }
+
+    async delete(id): Promise<DeleteResult> {
+      return await this.appsRepository.delete(id);
     }
 }
