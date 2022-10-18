@@ -1,9 +1,9 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity } from "typeorm";
 
 @Entity("users")
-export class Users{
-    
-    @Column("int", { primary: true, name: "user_id"})
+export class Users {
+
+    @Column("int", { primary: true, name: "user_id" })
     userId: number;
 
     @Column("varchar", { name: "user_code", nullable: true, length: 500 })
@@ -18,11 +18,11 @@ export class Users{
     @Column("varchar", { name: "user_phone_number", nullable: true, length: 500 })
     userPhoneNumber: string | null;
 
-    @Column("datetime", { name: "user_birthday", nullable: true})
+    @Column("datetime", { name: "user_birthday", nullable: true })
     userBirthday: Date | null;
 
-    @Column("varchar", { name: "user_gender", nullable: true, length: 500 })
-    userGender: string | null;
+    @Column("varchar", { name: "user_gender", nullable: true })
+    userGender: number | null;
 
     @Column("varchar", { name: "user_address", nullable: true, length: 500 })
     userAddress: string | null;
@@ -33,16 +33,16 @@ export class Users{
     @Column("varchar", { name: "user_avatar", nullable: true, length: 500 })
     userAvatar: string | null;
 
-    @Column("int", { name: "user_active", nullable: true})
+    @Column("int", { name: "user_active", nullable: true })
     userActive: number;
 
-    @Column("datetime", { name: "user_created_date", nullable: true})
+    @Column("datetime", { name: "user_created_date", nullable: true })
     userCreatedDate: Date | null;
 
     @Column("varchar", { name: "user_created_by", nullable: true, length: 500 })
     userCreatedBy: string | null;
 
-    @Column("datetime", { name: "user_updated_date", nullable: true})
+    @Column("datetime", { name: "user_updated_date", nullable: true })
     userUpdatedDate: Date | null;
 
     @Column("varchar", { name: "user_updated_by", nullable: true, length: 500 })

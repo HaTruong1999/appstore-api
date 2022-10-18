@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { Users } from 'src/common/entities/users.entity';
@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
 @ApiBearerAuth()
 @UseInterceptors(TransformInterceptor)
 export class UsersController {
-    constructor(private readonly usersService: UsersService){}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post('create')
   @ApiBody({ type: UsersDto })
@@ -23,10 +23,10 @@ export class UsersController {
     return this.usersService.create(usersData);
   }
 
-  
+
   @Get()
   @ApiPaginatedResponse(UsersDto)
-  async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Users>>{
+  async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Users>> {
     return this.usersService.findAll(paginationRequestDto);
   }
 
@@ -43,7 +43,7 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUsersDto: UsersDto,
-    @Req() req: any,
+    //@Req() req: any,
   ) {
     return this.usersService.update(id, updateUsersDto, "");
   }
