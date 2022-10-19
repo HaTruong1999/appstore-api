@@ -23,7 +23,6 @@ export class UsersController {
     return this.usersService.create(usersData);
   }
 
-
   @Get()
   @ApiPaginatedResponse(UsersDto)
   async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Users>> {
