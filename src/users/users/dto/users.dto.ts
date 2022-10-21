@@ -1,4 +1,4 @@
-import { IsNumber, IsDate } from 'class-validator'
+import { IsNumber } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UsersDto {
@@ -18,7 +18,7 @@ export class UsersDto {
   userPhoneNumber: string | null;
 
   @ApiProperty()
-  @IsDate()
+  //@IsDate()
   userBirthday: Date | null;
 
   @ApiProperty()
@@ -38,14 +38,14 @@ export class UsersDto {
   userActive: number;
 
   @ApiProperty()
-  @IsDate()
+  //@IsDate()
   userCreatedDate: Date | null;
 
   @ApiProperty()
   userCreatedBy: string | null;
 
   @ApiProperty()
-  @IsDate()
+  //@IsDate()
   userUpdatedDate: Date | null;
 
   @ApiProperty()

@@ -21,7 +21,6 @@ export class UsersService {
 
   async create(usersData: Users): Promise<any> {
     usersData.userCreatedDate = new Date();
-    usersData.userCreatedBy = ''; // Mã người cập nhật
     return await this.usersRepository.save(usersData);
   }
 
@@ -80,7 +79,6 @@ export class UsersService {
   async update(
     id: string,
     usersDto: UsersDto,
-    updatedBy: string,
   ): Promise<Users> {
     const users = await this.usersRepository.findOne(id);
     //User
@@ -89,13 +87,13 @@ export class UsersService {
     users.userPassword = usersDto.userPassword;
     users.userFullname = usersDto.userFullname;
     users.userPhoneNumber = usersDto.userPhoneNumber;
-    users.userBirthday = new Date(usersDto.userBirthday.toDateString());
+    users.userBirthday = new Date(usersDto.userBirthday.toString());
     users.userGender = usersDto.userGender;
     users.userAddress = usersDto.userAddress;
     users.userEmail = usersDto.userEmail;
     users.userAvatar = usersDto.userAvatar;
     users.userActive = usersDto.userActive;
-    users.userUpdatedBy = updatedBy;
+    users.userUpdatedBy =  usersDto.userUpdatedBy;
     users.userUpdatedDate = new Date();
 
     await this.usersRepository.update(id, users);

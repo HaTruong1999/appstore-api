@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query,UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { Users } from 'src/common/entities/users.entity';
@@ -29,9 +29,8 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUsersDto: UsersDto,
-    //@Req() req: any,
-  ) {
-    return this.usersService.update(id, updateUsersDto, "");
+  ): Promise<any> {
+    return this.usersService.update(id,updateUsersDto);
   }
 
   @Get()
