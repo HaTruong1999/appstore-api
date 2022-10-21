@@ -83,14 +83,14 @@ export class UsersService {
     const users = await this.usersRepository.findOne(id);
     //User
 
-    users.userCode = usersDto.userCode;
-    users.userPassword = usersDto.userPassword;
-    users.userFullname = usersDto.userFullname;
+    users.userCode = usersDto.userCode.trim();
+    users.userPassword = usersDto.userPassword.trim();
+    users.userFullname = usersDto.userFullname.trim();
     users.userPhoneNumber = usersDto.userPhoneNumber;
     users.userBirthday = new Date(usersDto.userBirthday.toString());
     users.userGender = usersDto.userGender;
-    users.userAddress = usersDto.userAddress;
-    users.userEmail = usersDto.userEmail;
+    users.userAddress = usersDto.userAddress.trim();
+    users.userEmail = usersDto.userEmail.trim();
     users.userAvatar = usersDto.userAvatar;
     users.userActive = usersDto.userActive;
     users.userUpdatedBy =  usersDto.userUpdatedBy;
