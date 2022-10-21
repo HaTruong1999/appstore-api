@@ -23,6 +23,16 @@ export class UsersController {
     return this.usersService.create(usersData);
   }
 
+  @Patch(':id')
+  @ApiParam({ name: 'id', description: 'ID' })
+  @ApiOkResponse({ description: 'Cập nhật  thành công.', type: UsersDto })
+  update(
+    @Param('id') id: string,
+    @Body() updateUsersDto: UsersDto,
+    //@Req() req: any,
+  ) {
+    return this.usersService.update(id, updateUsersDto, "");
+  }
 
   @Get()
   @ApiPaginatedResponse(UsersDto)
@@ -35,17 +45,6 @@ export class UsersController {
   @ApiOkResponse({ description: 'Tìm thấy thông tin.', type: UsersRequestDto })
   findOne(@Param('id') id: number) {
     return this.usersService.findOne(id);
-  }
-
-  @Patch(':id')
-  @ApiParam({ name: 'id', description: 'ID' })
-  @ApiOkResponse({ description: 'Cập nhật  thành công.', type: UsersDto })
-  update(
-    @Param('id') id: string,
-    @Body() updateUsersDto: UsersDto,
-    //@Req() req: any,
-  ) {
-    return this.usersService.update(id, updateUsersDto, "");
   }
 
   @Delete(':id')
