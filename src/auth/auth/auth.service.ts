@@ -5,7 +5,10 @@ import { Users } from 'src/common/entities/users.entity';
 import { UsersService } from 'src/users/users/users.service';
 import { ChangePasswordDto } from './dto/changepassword.dto';
 import { Like, Repository } from 'typeorm';
-import { UsersDto } from 'src/users/users/dto/users.dto';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+// const multer  = require('multer')
+import { AvatarDto, UsersDto } from 'src/users/users/dto/users.dto';
+// import path = require('path');
 
 @Injectable()
 export class AuthService {
@@ -191,6 +194,75 @@ export class AuthService {
           data: null,
           message: err,
         }
+      }
+    }
+
+    async upload(avatar: AvatarDto, file: any) {
+      try {
+        const userId = avatar.avatarID;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        // const self = this;
+        const user = await this.usersRepository.findOne(userId);
+        if (user == null) {
+          return {
+            code: 0,
+            data:null,
+            message: 'Avatar ID không tồn tại',
+          };
+        };
+    
+        // const { originalname, size, buffer, mimetype } = file;
+        // const fileExtension: string = path.extname(originalname);
+        // const fileName: string = 'admin/users/avatar/' + userId + fileExtension;
+    
+        //let avtSrc: any = '';
+        // try {
+        //   const storage = multer.diskStorage({
+        //     destination: function (req, file, cb) {
+        //       cb(null, './uploads/avatars');
+        //     },
+        //     filename: function (req, file, cb) {
+        //       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        //       cb(null, file.fieldname + '-' + uniqueSuffix);
+        //       avtSrc = file.fieldname + '-' + uniqueSuffix;
+        //     }
+        //   })
+          
+        //   const upload = multer({ storage: storage })
+        //   console.log(upload);
+        // } catch (error) {
+        //   console.log(error)
+        // }
+    
+        // ------- UPDATE AVATAR PATH ------
+        //await this.usersRepository.update(userId, user);
+        // ------- GET URL -------
+        // try {
+        //   const url = await presignedGetObject(
+        //     fileName,
+        //   );
+    
+        //   avatar.avatarSrc = url;
+        // } catch (error) {
+        //   this.logger.error(error);
+        //   return error;
+        // }
+    
+        return {
+          code: 0,
+          data:{
+            avatarID: avatar,
+            avatarSrc: file.fieldname,
+          },
+          message: "Cập nhật avatar thành công"
+        };
+      } catch (error) {
+        console.log(error);
+        return {
+          code: 0,
+          data:null,
+          message: error,
+        };
       }
     }
 }

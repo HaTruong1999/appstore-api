@@ -46,6 +46,8 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "file-type": "^16.5.3",
+    "multer": "^1.4.5-lts.1",
     "nestjs-redoc": "^2.2.2",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",

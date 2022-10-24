@@ -81,5 +81,11 @@ export class Meta {
   currentPage: number;
 }
 
+export class AvatarDto {
+  avatarID: string;
+  avatarSrc: string;
+}
+
+
 
 

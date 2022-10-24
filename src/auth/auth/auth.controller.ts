@@ -1,11 +1,20 @@
 import { AuthService } from './auth.service';
-import { Body, Controller, Get, Post, UseGuards,Request, Res, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards,Request, Res, Req, UseInterceptors, HttpException, HttpStatus, UploadedFile } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { ChangePasswordDto } from './dto/changepassword.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { UsersDto } from 'src/users/users/dto/users.dto';
+import { AvatarDto, UsersDto } from 'src/users/users/dto/users.dto';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+// import { extname } from 'path';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const multer  = require('multer');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const FileType = require('file-type');
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/ultils/file-upload.utils';
+// const MAX_SIZE = 5242880; //5MB
 
 @ApiBearerAuth()
 @ApiTags('Authentication')
@@ -63,4 +72,71 @@ export class AuthController {
         updateUsersDto
       );
     }
+
+    // @UseGuards(JwtAuthGuard)
+    // @UseInterceptors(
+    //   FileInterceptor('file', {
+    //     storage: multer.diskStorage({
+    //         destination: './uploads/avatars',
+    //         filename: function (req, file, cb) {
+    //           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    //           cb(null, file.fieldname + '-' + uniqueSuffix);
+    //           //avtSrc = file.fieldname + '-' + uniqueSuffix;
+    //         }
+    //       }),
+    //     // storage: multer.memoryStorage(),
+    //     // dest: './uploads/avatars',
+    //     // limits: {
+    //     //   fileSize: MAX_SIZE,
+    //     // },
+    //     // fileFilter: (req: any, file: any, cb: any) => {
+    //     //   if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+    //     //     // Allow storage of file
+    //     //     cb(null, true);
+    //     //   } else {
+    //     //     // Reject file
+    //     //     cb(
+    //     //       new HttpException(
+    //     //         `Không hỗ trợ định dạng của file ${extname(file.originalname)}`,
+    //     //         HttpStatus.BAD_REQUEST,
+    //     //       ),
+    //     //       false,
+    //     //     );
+    //     //   }
+    //     // },
+    //   }),
+    // )
+    // @UseInterceptors(FileInterceptor('file'))
+    // @Post('changeAvatar')
+    // async uploadFile(
+    //   @Body() body: AvatarDto,
+    //   @UploadedFile() file,
+    //   @Req() req: any
+    // ) {
+    //   const ex = await FileType.fromBuffer(file.buffer);
+    //   if (!ex.mime.match(/\/(jpg|jpeg|png|gif)$/)) {
+    //     throw new HttpException(`Không hỗ trợ định dạng của file ${ex.ext}`, HttpStatus.BAD_REQUEST);
+    //   }
+    //   body.avatarID = req.user.userId;
+    //   return this.authService.upload(body, file);
+    // }
+
+    @Post('changeAvatar')
+    @UseInterceptors(
+        FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './uploads/avatars',
+            filename: editFileName,
+        }),
+        fileFilter: imageFileFilter,
+        }),
+    )
+    async uploadedFile(@UploadedFile() file) {
+        const response = {
+          originalname: file.originalname,
+          filename: file.filename,
+        };
+        return response;
+      }
+
 }
