@@ -5,6 +5,7 @@ import { Users } from 'src/common/entities/users.entity';
 import { UsersService } from 'src/users/users/users.service';
 import { ChangePasswordDto } from './dto/changepassword.dto';
 import { Like, Repository } from 'typeorm';
+import { UsersDto } from 'src/users/users/dto/users.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,9 +14,7 @@ export class AuthService {
         private jwtService: JwtService,
         @InjectRepository(Users)
         private usersRepository: Repository<Users>
-    ){
-
-    }
+    ){}
 
     async validateUser(userCode: string, pass: string): Promise<any> {
         // const user = await this.usersService.findUserByEmail(username);
@@ -32,54 +31,63 @@ export class AuthService {
           return result;
         }
         return null;
-      }
+    }
     
-    async login(userDto) {
-      const user = await this.validateUser(userDto.username, userDto.password);
-      // console.log(user);
-      if (user === null){
-        return {
-          code: 0,
-          data:{
-            accessToken: "",
-          },
-          message: "sai tên đăng nhập hoặc mật khẩu"
+    async sign(userDto: any) {
+      try {
+        const user = await this.validateUser(userDto.username, userDto.password);
+        if (user === null){
+          return {
+            code: 0,
+            data:{
+              accessToken: "",
+            },
+            message: "sai tên đăng nhập hoặc mật khẩu"
+          }
+        } else if(user.userActive === 0){
+          return {
+            code: 0,
+            data:{
+              codeErr: 'UNACTIVE',
+              accessToken: "",
+            },
+            message: "Tài khoản chưa kích hoạt."
+          }
+        } else if(user.userActive === 2){
+          return {
+            code: 0,
+            data:{
+              codeErr: 'LOCKED',
+              accessToken: "",
+            },
+            message: "Tài khoản bị khóa."
+          }
         }
-      } else if(user.userActive === 0){
+        const payload = {
+          userCode: user.userCode,
+          userName: user.userName,
+          sub: user.userId,
+          userFullname: user.userFullname,
+          userPhonenumber: user.userPhonenumber,
+        };
+        return {
+          code: 1,
+          data: {
+            accessToken: this.jwtService.sign(payload),
+            userFullname: payload.userFullname,
+            userPhonenumber: payload.userPhonenumber,
+          },
+          message: "Đăng nhập thành công!",
+        };        
+      } catch (error) {
         return {
           code: 0,
           data:{
-            codeErr: 'UNACTIVE',
             accessToken: "",
           },
-          message: "Tài khoản chưa kích hoạt."
-        }
-      } else if(user.userActive === 2){
-        return {
-          code: 0,
-          data:{
-            codeErr: 'LOCKED',
-            accessToken: "",
-          },
-          message: "Tài khoản bị khóa."
+          message: error,
         }
       }
-      const payload = {
-        userCode: user.userCode,
-        userName: user.userName,
-        sub: user.userId,
-        userFullname: user.userFullname,
-        userPhonenumber: user.userPhonenumber,
-      };
-      return {
-        code: 1,
-        data: {
-          accessToken: this.jwtService.sign(payload),
-          userFullname: payload.userFullname,
-          userPhonenumber: payload.userPhonenumber,
-        },
-        message: "Đăng nhập thành công!",
-      };
     }
 
     async checkToken(user: any)
@@ -121,8 +129,69 @@ export class AuthService {
       }
 
     }
+
+    async findOne(id: string): Promise<any> {
+      try {
+        const user = await this.usersRepository.findOne(id);
+        if (!user) {
+          return {
+            code: 0,
+            data: null,
+            message: "Tài khoản không tồn tại."
+          }
+        }else{
+          return {
+            code: 1,
+            data: user,
+            message: "Tài khoản không tồn tại."
+          }
+        };
+      } catch (error) {
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        }
+      }
+    }
+
+    async update(userId: string, usersDto: UsersDto) {
+      try {
+        const users = await this.usersRepository.findOne(userId);
+        if(!users){
+          return {
+            code: 0,
+            data:null,
+            message: "Người dùng không tồn tại!"
+          }
+        }else{
+          users.userCode = usersDto.userCode.trim();
+          users.userFullname = usersDto.userFullname.trim();
+          users.userPhoneNumber = usersDto.userPhoneNumber;
+          users.userBirthday = new Date(usersDto.userBirthday.toString());
+          users.userGender = usersDto.userGender;
+          users.userAddress = usersDto.userAddress.trim();
+          users.userEmail = usersDto.userEmail.trim();
+          users.userAvatar = usersDto.userAvatar;
+          users.userActive = usersDto.userActive;
+          users.userUpdatedBy =  usersDto.userUpdatedBy;
+          users.userUpdatedDate = new Date();
+  
+          await this.usersRepository.update(userId, users);
+          return {
+            code: 1,
+            data: users,
+            message: "Cập nhật thành công!"
+          }
+        }
+      } catch (err) {
+        console.log(err);
+        return {
+          code: 0,
+          data: null,
+          message: err,
+        }
+      }
+    }
 }
-// function cryptPassword(passwordNew: string): any {
-//   throw new Error('Function not implemented.');
-// }
 

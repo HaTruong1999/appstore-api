@@ -1,34 +1,32 @@
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guard/local-auth.guard';
-import { Body, Controller, Get, Post, UseGuards,Request, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards,Request, Res, Req } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { ChangePasswordDto } from './dto/changepassword.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { UsersDto } from 'src/users/users/dto/users.dto';
 
+@ApiBearerAuth()
+@ApiTags('Authentication')
 @Controller('auth')
-@ApiTags('Auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
 
-    @UseGuards(LocalAuthGuard)
     @Post('login')
     @ApiBody({ type: AuthDto })
-    @ApiResponse({ status: 200, description: 'Đăng nhập thành công.'})
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
     async login(@Body() authDto: AuthDto) {
-        return this.authService.login(authDto);
+        return this.authService.sign(authDto);
     }
 
-    @UseGuards(LocalAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get('checkToken')
     async checkToken(@Request() req: any) {
         return this.authService.checkToken(req.user);
     }
 
-    @UseGuards(LocalAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post('changePassword')
-   // @ApiResponse({ status: 201, description: 'Đổi mật khẩu thành công.'})
     @ApiBody({ type: ChangePasswordDto })
     async changePassword(
         @Body() change: ChangePasswordDto,
@@ -46,5 +44,23 @@ export class AuthController {
                 ...result,
             });
         }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('account')
+    async account(
+      @Req() req: any
+    ) {
+      return this.authService.findOne(req.user.userId)
+    }
+
+    //Cập nhật thông tin
+    @UseGuards(JwtAuthGuard)
+    @Post('/changeProfile')
+    update(@Body() updateUsersDto: UsersDto, @Req() req: any) {
+      return this.authService.update(
+        req.user.userId,
+        updateUsersDto
+      );
     }
 }
