@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from 'src/common/entities/users.entity';
 import { UsersModule } from 'src/users/users.module';
-import { UsersService } from 'src/users/users/users.service';
+// import { UsersService } from 'src/users/users/users.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { jwtConstants } from './auth/constants';
@@ -14,12 +15,19 @@ import { LocalStrategy } from './auth/strategies/local.strategy';
 @Module({
   imports: [
     JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
+      privateKey: jwtConstants.privateKey,
+      publicKey: jwtConstants.publicKey,
+      signOptions: {
+        expiresIn: '1d',
+        algorithm: 'RS256',
+      },
     }),
     UsersModule,
     PassportModule,
     TypeOrmModule.forFeature([Users]),
+    MulterModule.register({
+      dest: './uploads/avatars',
+    })
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],

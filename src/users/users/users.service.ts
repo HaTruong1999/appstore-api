@@ -21,7 +21,6 @@ export class UsersService {
 
   async create(usersData: Users): Promise<any> {
     usersData.userCreatedDate = new Date();
-    usersData.userCreatedBy = ''; // Mã người cập nhật
     return await this.usersRepository.save(usersData);
   }
 
@@ -48,15 +47,24 @@ export class UsersService {
 
   }
 
-  async findOne(id: number): Promise<UsersDto> {
+  async findOne(id: number): Promise<any> {
     const users = await this.usersRepository.findOne(id);
     if (!users) {
-      throw new NotFoundException(this.notFoundMessage);
+      return {
+        code: 0,
+        data: null,
+        message: "Người dùng không tồn tại!"
+      }
+      //throw new NotFoundException(this.notFoundMessage);
+    }else{
+      const userDto = toUsersDto(users);
+
+      return {
+        code: 1,
+        data: userDto,
+        message: "Lấy dữ liệu thành công!"
+      }
     }
-
-    const userDto = toUsersDto(users);
-
-    return userDto;
   }
 
   async findUserByEmail(email: string): Promise<UsersDto> {
@@ -80,22 +88,21 @@ export class UsersService {
   async update(
     id: string,
     usersDto: UsersDto,
-    updatedBy: string,
   ): Promise<Users> {
     const users = await this.usersRepository.findOne(id);
     //User
 
-    users.userCode = usersDto.userCode;
-    users.userPassword = usersDto.userPassword;
-    users.userFullname = usersDto.userFullname;
+    users.userCode = usersDto.userCode.trim();
+    users.userPassword = usersDto.userPassword.trim();
+    users.userFullname = usersDto.userFullname.trim();
     users.userPhoneNumber = usersDto.userPhoneNumber;
-    users.userBirthday = new Date(usersDto.userBirthday.toDateString());
+    users.userBirthday = new Date(usersDto.userBirthday.toString());
     users.userGender = usersDto.userGender;
-    users.userAddress = usersDto.userAddress;
-    users.userEmail = usersDto.userEmail;
+    users.userAddress = usersDto.userAddress.trim();
+    users.userEmail = usersDto.userEmail.trim();
     users.userAvatar = usersDto.userAvatar;
     users.userActive = usersDto.userActive;
-    users.userUpdatedBy = updatedBy;
+    users.userUpdatedBy =  usersDto.userUpdatedBy;
     users.userUpdatedDate = new Date();
 
     await this.usersRepository.update(id, users);

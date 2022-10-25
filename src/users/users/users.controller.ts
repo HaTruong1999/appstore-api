@@ -1,10 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query,UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { Users } from 'src/common/entities/users.entity';
 import { Pagination, PaginationRequestDto } from 'src/common/pagination';
 import { TransformInterceptor } from 'src/transform.interceptor';
-import { UsersRequestDto } from './dto/users-request.dto';
 import { UsersDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 
@@ -23,6 +22,16 @@ export class UsersController {
     return this.usersService.create(usersData);
   }
 
+  @Patch(':id')
+  @ApiParam({ name: 'id', description: 'ID' })
+  @ApiOkResponse({ description: 'Cập nhật  thành công.', type: UsersDto })
+  update(
+    @Param('id') id: string,
+    @Body() updateUsersDto: UsersDto,
+  ): Promise<any> {
+    return this.usersService.update(id,updateUsersDto);
+  }
+
   @Get()
   @ApiPaginatedResponse(UsersDto)
   async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Users>> {
@@ -31,20 +40,9 @@ export class UsersController {
 
   @Get(':id')
   @ApiParam({ name: 'id', description: 'ID' })
-  @ApiOkResponse({ description: 'Tìm thấy thông tin.', type: UsersRequestDto })
+  //@ApiOkResponse({ description: 'Tìm thấy thông tin.', type: UsersRequestDto })
   findOne(@Param('id') id: number) {
     return this.usersService.findOne(id);
-  }
-
-  @Patch(':id')
-  @ApiParam({ name: 'id', description: 'ID' })
-  @ApiOkResponse({ description: 'Cập nhật  thành công.', type: UsersDto })
-  update(
-    @Param('id') id: string,
-    @Body() updateUsersDto: UsersDto,
-    //@Req() req: any,
-  ) {
-    return this.usersService.update(id, updateUsersDto, "");
   }
 
   @Delete(':id')

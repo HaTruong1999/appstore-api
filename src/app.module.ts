@@ -7,9 +7,14 @@ import { AppsModule } from './apps/apps.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', ''),
+    }),
     ApptypesModule,
     TypeOrmModule.forRoot({
       type: 'sqlite',
