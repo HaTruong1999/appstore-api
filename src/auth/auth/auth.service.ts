@@ -219,7 +219,8 @@ export class AuthService {
         user.userAvatar = AVT_PATH + file.filename;
         await this.usersRepository.update(userId, user);
         // Delete the file
-        await unlinkAsync(oldUserAvatar);
+        if(oldUserAvatar)
+          await unlinkAsync(oldUserAvatar);
         return {
           code: 1,
           data: {
