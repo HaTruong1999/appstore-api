@@ -47,15 +47,24 @@ export class UsersService {
 
   }
 
-  async findOne(id: number): Promise<UsersDto> {
+  async findOne(id: number): Promise<any> {
     const users = await this.usersRepository.findOne(id);
     if (!users) {
-      throw new NotFoundException(this.notFoundMessage);
+      return {
+        code: 0,
+        data: null,
+        message: "Người dùng không tồn tại!"
+      }
+      //throw new NotFoundException(this.notFoundMessage);
+    }else{
+      const userDto = toUsersDto(users);
+
+      return {
+        code: 1,
+        data: userDto,
+        message: "Lấy dữ liệu thành công!"
+      }
     }
-
-    const userDto = toUsersDto(users);
-
-    return userDto;
   }
 
   async findUserByEmail(email: string): Promise<UsersDto> {

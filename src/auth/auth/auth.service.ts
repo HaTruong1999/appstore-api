@@ -150,7 +150,7 @@ export class AuthService {
         return {
           code: 1,
           data: user,
-          message: "Tài khoản không tồn tại."
+          message: "Lấy dữ liệu thành công."
         }
       };
     } catch (error) {
@@ -179,7 +179,7 @@ export class AuthService {
         users.userGender = usersDto.userGender;
         users.userAddress = usersDto.userAddress.trim();
         users.userEmail = usersDto.userEmail.trim();
-        users.userAvatar = usersDto.userAvatar;
+        //users.userAvatar = usersDto.userAvatar;
         users.userActive = usersDto.userActive;
         users.userUpdatedBy = usersDto.userUpdatedBy;
         users.userUpdatedDate = new Date();

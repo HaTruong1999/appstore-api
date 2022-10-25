@@ -4,7 +4,6 @@ import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-respon
 import { Users } from 'src/common/entities/users.entity';
 import { Pagination, PaginationRequestDto } from 'src/common/pagination';
 import { TransformInterceptor } from 'src/transform.interceptor';
-import { UsersRequestDto } from './dto/users-request.dto';
 import { UsersDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 
@@ -41,7 +40,7 @@ export class UsersController {
 
   @Get(':id')
   @ApiParam({ name: 'id', description: 'ID' })
-  @ApiOkResponse({ description: 'Tìm thấy thông tin.', type: UsersRequestDto })
+  //@ApiOkResponse({ description: 'Tìm thấy thông tin.', type: UsersRequestDto })
   findOne(@Param('id') id: number) {
     return this.usersService.findOne(id);
   }
