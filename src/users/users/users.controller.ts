@@ -16,8 +16,6 @@ export class UsersController {
 
   @Post('create')
   @ApiBody({ type: UsersDto })
-  // @ApiCreatedResponse({ description: 'Tạo mới.', type: UsersDto })
-  // @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() usersData: Users): Promise<any> {
     return this.usersService.create(usersData);
   }
@@ -35,6 +33,13 @@ export class UsersController {
     return this.usersService.findAll(paginationRequestDto);
   }
 
+  @Get('checkUserCode')
+  checkUserCode(
+    @Query('usercode') usercode: string,
+  ): Promise<any> {
+    return this.usersService.checkUserCode(usercode);
+  }
+
   @Get(':id')
   @ApiParam({ name: 'id', description: 'ID' })
   findOne(@Param('id') id: number): Promise<any> {
@@ -43,7 +48,7 @@ export class UsersController {
 
   @Delete(':id')
   @ApiParam({ name: 'id', description: 'ID' })
-  @ApiOkResponse({ description: 'Xoá thành công.', type: UsersDto })
+  // @ApiOkResponse({ description: 'Xoá thành công.', type: UsersDto })
   remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }

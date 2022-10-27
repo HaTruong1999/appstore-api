@@ -6,6 +6,13 @@ import { Like, Repository } from 'typeorm';
 import { UsersRequestDto } from './dto/users-request.dto';
 import { UsersDto } from './dto/users.dto';
 import { toUsersDto } from './utils/mapper';
+const AVT_PATH = 'uploads/avatars/';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { promisify } = require('util')
+
+const unlinkAsync = promisify(fs.unlink)
 
 @Injectable()
 export class UsersService {
@@ -22,10 +29,12 @@ export class UsersService {
   async create(usersData: Users): Promise<any> {
     usersData.userCreatedDate = new Date();
     try {
-      const users = await this.usersRepository.save(usersData);
+
+      const user = await this.usersRepository.save(usersData);
+
       return {
         code: 1,
-        data: users,
+        data: user,
         message: 'Tạo mới thành công.',
       }
     } catch (error) {
@@ -146,11 +155,72 @@ export class UsersService {
     
   }
 
-  async remove(id: number): Promise<Users> {
-    const users = await this.usersRepository.findOne(id);
+  async remove(id: number): Promise<any> {
+    try {
+      const users = await this.usersRepository.findOne(id);
+      if(users){
+        await this.usersRepository.delete(id);
+        if(users.userAvatar){
+          try {
+            await unlinkAsync(users.userAvatar);
+          } catch (error) {
+            console.log(error);
+          }
+        }
 
-    await this.usersRepository.delete(id);
-    return users;
+        return {
+          code: 1,
+          data: users,
+          message: 'Xóa người dùng thành công.',
+        }
+      }
+      return {
+        code: 1,
+        data: null,
+        message: 'Người dùng không tồn tại.',
+      }
+
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: 'Xảy ra sự cố:' + error,
+      }
+    }
   }
 
+  async checkUserCode(usercode: string): Promise<any> {
+    try {
+      const user = await this.usersRepository.findOne({
+        userCode: usercode
+      });
+  
+      if(user){
+        return {
+          code: 1,
+          data: {
+            usercode: usercode,
+            isExisted: true,
+          },
+          message: 'Mã người dùng đã tồn tại.',
+        }
+      }else{
+        return {
+          code: 1,
+          data: {
+            usercode: usercode,
+            isExisted: false,
+          },
+          message: 'Mã người dùng hợp lệ.',
+        }
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error,
+      }
+    }
+  }
 }
+

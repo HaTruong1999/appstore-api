@@ -68,6 +68,23 @@ export class AuthController {
     );
   }
 
+  @Post('changeAvatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/avatars',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadedFile(
+    @Body() body: AvatarDto,
+    @UploadedFile() file,
+  ) {
+    return this.authService.upload(body, file);
+  }
+
   // @UseGuards(JwtAuthGuard)
   // @UseInterceptors(
   //   FileInterceptor('file', {
@@ -115,22 +132,5 @@ export class AuthController {
   //   body.avatarID = req.user.userId;
   //   return this.authService.upload(body, file);
   // }
-
-  @Post('changeAvatar')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads/avatars',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async uploadedFile(
-    @Body() body: AvatarDto,
-    @UploadedFile() file,
-  ) {
-    return this.authService.upload(body, file);
-  }
 
 }
