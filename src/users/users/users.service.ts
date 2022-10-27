@@ -21,7 +21,20 @@ export class UsersService {
 
   async create(usersData: Users): Promise<any> {
     usersData.userCreatedDate = new Date();
-    return await this.usersRepository.save(usersData);
+    try {
+      const users = await this.usersRepository.save(usersData);
+      return {
+        code: 1,
+        data: users,
+        message: 'Tạo mới thành công.',
+      }
+    } catch (error) {
+      return {
+        code: 1,
+        data: null,
+        message: error,
+      }
+    }
   }
 
   async findAll(pagination: UsersRequestDto): Promise<Pagination<Users>> {
@@ -44,7 +57,6 @@ export class UsersService {
     if (pagination.sort != null && pagination.sort != '')
       orders = JSON.parse(pagination.sort);
     return paginate<Users>(this.usersRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
-
   }
 
   async findOne(id: number): Promise<any> {
@@ -55,7 +67,6 @@ export class UsersService {
         data: null,
         message: "Người dùng không tồn tại!"
       }
-      //throw new NotFoundException(this.notFoundMessage);
     }else{
       const userDto = toUsersDto(users);
 
@@ -86,27 +97,53 @@ export class UsersService {
   }
 
   async update(
-    id: string,
+    // id: string,
     usersDto: UsersDto,
-  ): Promise<Users> {
-    const users = await this.usersRepository.findOne(id);
-    //User
-
-    users.userCode = usersDto.userCode.trim();
-    users.userPassword = usersDto.userPassword.trim();
-    users.userFullname = usersDto.userFullname.trim();
-    users.userPhoneNumber = usersDto.userPhoneNumber;
-    users.userBirthday = new Date(usersDto.userBirthday.toString());
-    users.userGender = usersDto.userGender;
-    users.userAddress = usersDto.userAddress.trim();
-    users.userEmail = usersDto.userEmail.trim();
-    users.userAvatar = usersDto.userAvatar;
-    users.userActive = usersDto.userActive;
-    users.userUpdatedBy =  usersDto.userUpdatedBy;
-    users.userUpdatedDate = new Date();
-
-    await this.usersRepository.update(id, users);
-    return users;
+  ): Promise<any> {
+    try {
+      const users = await this.usersRepository.findOne(usersDto.userId);
+      if(!users){
+        return {
+          code: 0,
+          data: null,
+          message: 'Người dùng không tồn tại.',
+        }
+      }else{
+        users.userCode = usersDto.userCode.trim();
+        users.userPassword = usersDto.userPassword.trim();
+        users.userFullname = usersDto.userFullname.trim();
+        users.userPhoneNumber = usersDto.userPhoneNumber;
+        users.userBirthday = new Date(usersDto.userBirthday.toString());
+        users.userGender = usersDto.userGender;
+        users.userAddress = usersDto.userAddress.trim();
+        users.userEmail = usersDto.userEmail.trim();
+        users.userActive = usersDto.userActive;
+        users.userUpdatedBy =  usersDto.userUpdatedBy;
+        users.userUpdatedDate = new Date();
+    
+        try {
+          await this.usersRepository.update(usersDto.userId, users);
+          return {
+            code: 1,
+            data: users,
+            message: 'Cập nhật thông tin thành công.',
+          }
+        } catch (error) {
+          return {
+            code: 0,
+            data: null,
+            message: error,
+          }
+        }
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error,
+      }
+    }
+    
   }
 
   async remove(id: number): Promise<Users> {

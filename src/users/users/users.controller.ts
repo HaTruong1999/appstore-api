@@ -1,47 +1,43 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query,UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { Users } from 'src/common/entities/users.entity';
-import { Pagination, PaginationRequestDto } from 'src/common/pagination';
-import { TransformInterceptor } from 'src/transform.interceptor';
+import {PaginationRequestDto } from 'src/common/pagination';
+//import { TransformInterceptor } from 'src/transform.interceptor';
 import { UsersDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('Users')
 @ApiBearerAuth()
-@UseInterceptors(TransformInterceptor)
+//@UseInterceptors(TransformInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
   @Post('create')
   @ApiBody({ type: UsersDto })
-  @ApiCreatedResponse({ description: 'Tạo mới.', type: UsersDto })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  // @ApiCreatedResponse({ description: 'Tạo mới.', type: UsersDto })
+  // @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() usersData: Users): Promise<any> {
     return this.usersService.create(usersData);
   }
 
   @Patch(':id')
-  @ApiParam({ name: 'id', description: 'ID' })
-  @ApiOkResponse({ description: 'Cập nhật  thành công.', type: UsersDto })
   update(
-    @Param('id') id: string,
     @Body() updateUsersDto: UsersDto,
   ): Promise<any> {
-    return this.usersService.update(id,updateUsersDto);
+    return this.usersService.update(updateUsersDto);
   }
 
   @Get()
   @ApiPaginatedResponse(UsersDto)
-  async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Users>> {
+  async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<any> {
     return this.usersService.findAll(paginationRequestDto);
   }
 
   @Get(':id')
   @ApiParam({ name: 'id', description: 'ID' })
-  //@ApiOkResponse({ description: 'Tìm thấy thông tin.', type: UsersRequestDto })
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: number): Promise<any> {
     return this.usersService.findOne(id);
   }
 
@@ -51,6 +47,4 @@ export class UsersController {
   remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }
-
-
 }
