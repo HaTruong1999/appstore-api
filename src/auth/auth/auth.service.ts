@@ -204,7 +204,13 @@ export class AuthService {
   async upload(avatar: AvatarDto, file: any) {
     try {
       const userId = avatar.avatarID;
-      const user = await this.usersRepository.findOne(userId);
+      let user = await this.usersRepository.findOne(userId);
+      if(user == null){
+        user = await this.usersRepository.findOne({
+          userCode: avatar.avatarID
+        });
+      }
+        
       if (user == null) {
         // Delete the file
         await unlinkAsync(file.path)
@@ -217,7 +223,7 @@ export class AuthService {
         const oldUserAvatar = user.userAvatar;
         // ------- UPDATE AVATAR PATH ------
         user.userAvatar = AVT_PATH + file.filename;
-        await this.usersRepository.update(userId, user);
+        await this.usersRepository.update(user.userId, user);
         // Delete the file
         try {
           await unlinkAsync(oldUserAvatar);
@@ -228,7 +234,7 @@ export class AuthService {
         return {
           code: 1,
           data: {
-            avatarID: userId,
+            avatarID: user.userId,
             avatarSrc: AVT_PATH + file.filename,
           },
           message: "Cập nhật avatar thành công"
