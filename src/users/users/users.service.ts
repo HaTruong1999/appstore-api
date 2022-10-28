@@ -6,7 +6,6 @@ import { Like, Repository } from 'typeorm';
 import { UsersRequestDto } from './dto/users-request.dto';
 import { UsersDto } from './dto/users.dto';
 import { toUsersDto } from './utils/mapper';
-const AVT_PATH = 'uploads/avatars/';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs')
 // eslint-disable-next-line @typescript-eslint/no-var-requires

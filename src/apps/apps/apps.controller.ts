@@ -1,31 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Pagination, PaginationRequestDto } from 'src/common/pagination';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsService } from './apps.service';
-import { AppsRequestDto } from './dto/apps-request.dto';
 import {
   ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
   ApiTags,
-  ApiCreatedResponse,
   ApiBody
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/ultils/file-upload.utils';
 import { AppsDto } from './dto/apps.dto';
-import { TransformInterceptor } from 'src/transform.interceptor';
+// import { TransformInterceptor } from 'src/transform.interceptor';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
+import { AvatarDto } from 'src/users/users/dto/users.dto';
 
 @Controller('apps')
 @ApiTags('Apps')
 @ApiBearerAuth()
-@UseInterceptors(TransformInterceptor)
+// @UseInterceptors(TransformInterceptor)
 export class AppsController {
     constructor(private readonly appsService: AppsService){}
 
   @Post('create')
   @ApiBody({ type: AppsDto })
-  @ApiCreatedResponse({ description: 'Tạo mới.', type: AppsDto })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  // @ApiCreatedResponse({ description: 'Tạo mới.', type: AppsDto })
+  // @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() appsData: Apps, @Request() req): Promise<any> {
     return this.appsService.create(appsData, req.userId);
   }
@@ -36,14 +36,15 @@ export class AppsController {
     return this.appsService.findAll(paginationRequestDto);
   }
 
-  @Get(':id')
-  @ApiResponse({
-    status: 200,
-    description: 'The found record',
-    type: AppsDto
-  })
+  @Get('checkAppCode')
+  checkUserCode(
+    @Query('appcode') appcode: string,
+  ): Promise<any> {
+    return this.appsService.checkAppCode(appcode);
+  }
 
-  async findOne(@Param('id') id : number){
+  @Get(':id')
+  async findOne(@Param('id') id : number): Promise<any>{
     return this.appsService.findOne(id);
   }
 
@@ -58,4 +59,20 @@ export class AppsController {
       return this.appsService.delete(id);
   }  
 
+  @Post('changeAvatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/app/avatars',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadedFile(
+    @Body() body: AvatarDto,
+    @UploadedFile() file,
+  ) {
+    return this.appsService.upload(body, file);
+  }
 }
