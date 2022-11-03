@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { Users } from 'src/common/entities/users.entity';
 import {PaginationRequestDto } from 'src/common/pagination';

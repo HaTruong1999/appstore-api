@@ -38,7 +38,7 @@ export class UsersService {
       }
     } catch (error) {
       return {
-        code: 1,
+        code: 0,
         data: null,
         message: error,
       }
@@ -104,36 +104,33 @@ export class UsersService {
     return userDto;
   }
 
-  async update(
-    // id: string,
-    usersDto: UsersDto,
-  ): Promise<any> {
+  async update(usersDto: UsersDto): Promise<any> {
     try {
-      const users = await this.usersRepository.findOne(usersDto.userId);
-      if(!users){
+      const user = await this.usersRepository.findOne(usersDto.userId);
+      if(!user){
         return {
           code: 0,
           data: null,
           message: 'Người dùng không tồn tại.',
         }
       }else{
-        users.userCode = usersDto.userCode.trim();
-        users.userPassword = usersDto.userPassword.trim();
-        users.userFullname = usersDto.userFullname.trim();
-        users.userPhoneNumber = usersDto.userPhoneNumber;
-        users.userBirthday = new Date(usersDto.userBirthday.toString());
-        users.userGender = usersDto.userGender;
-        users.userAddress = usersDto.userAddress.trim();
-        users.userEmail = usersDto.userEmail.trim();
-        users.userActive = usersDto.userActive;
-        users.userUpdatedBy =  usersDto.userUpdatedBy;
-        users.userUpdatedDate = new Date();
+        user.userCode = usersDto.userCode.trim();
+        user.userPassword = usersDto.userPassword.trim();
+        user.userFullname = usersDto.userFullname.trim();
+        user.userPhoneNumber = usersDto.userPhoneNumber;
+        user.userBirthday = new Date(usersDto.userBirthday.toString());
+        user.userGender = usersDto.userGender;
+        user.userAddress = usersDto.userAddress.trim();
+        user.userEmail = usersDto.userEmail.trim();
+        user.userActive = usersDto.userActive;
+        user.userUpdatedBy =  usersDto.userUpdatedBy;
+        user.userUpdatedDate = new Date();
     
         try {
-          await this.usersRepository.update(usersDto.userId, users);
+          await this.usersRepository.update(usersDto.userId, user);
           return {
             code: 1,
-            data: users,
+            data: user,
             message: 'Cập nhật thông tin thành công.',
           }
         } catch (error) {
@@ -151,7 +148,6 @@ export class UsersService {
         message: error,
       }
     }
-    
   }
 
   async remove(id: number): Promise<any> {

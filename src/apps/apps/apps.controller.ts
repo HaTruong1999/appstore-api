@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Pagination, PaginationRequestDto } from 'src/common/pagination';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsService } from './apps.service';
@@ -26,8 +26,8 @@ export class AppsController {
   @ApiBody({ type: AppsDto })
   // @ApiCreatedResponse({ description: 'Tạo mới.', type: AppsDto })
   // @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async create(@Body() appsData: Apps, @Request() req): Promise<any> {
-    return this.appsService.create(appsData, req.userId);
+  async create(@Body() appsData: Apps): Promise<any> {
+    return this.appsService.create(appsData);
   }
 
   @Get()
@@ -48,10 +48,11 @@ export class AppsController {
     return this.appsService.findOne(id);
   }
 
-  @Put(':id/update')
-  async update(@Param('id') id, @Body() entityData: Apps, @Request() req): Promise<any> {
-      entityData.appId = Number(id);
-      return this.appsService.update(entityData, req.userId);
+  @Patch()
+  async update(
+    @Body() updateAppsDto: Apps
+  ): Promise<any> {
+      return this.appsService.update(updateAppsDto);
   }
 
   @Delete(':id/delete')

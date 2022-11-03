@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'src/common/pagination';
 import { AvatarDto } from 'src/users/users/dto/users.dto';
-import { DeleteResult, Like, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Like, Repository } from 'typeorm';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsRequestDto } from './dto/apps-request.dto';
 const AVT_PATH = 'uploads/app/avatars/';
@@ -20,11 +20,24 @@ export class AppsService {
         private appsRepository: Repository<Apps>
       ) { }
       
-    async create(appsData: Apps, createdBy): Promise<any> {
-      
+    async create(appsData: Apps): Promise<any> {
       appsData.appCreatedDate = new Date();
-      appsData.appCreatedBy = createdBy; // Mã người cập nhật
-      return await this.appsRepository.save(appsData);
+      appsData.appUpdatedDate = new Date();
+      try {
+        const app = await this.appsRepository.save(appsData);
+  
+        return {
+          code: 1,
+          data: app,
+          message: 'Tạo mới thành công.',
+        }
+      } catch (error) {
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        }
+      }
     }
 
     async findAll(pagination: AppsRequestDto): Promise<Pagination<Apps>>{
@@ -69,10 +82,46 @@ export class AppsService {
       }
     }
 
-    async update(entity: Apps, updatedBy: string): Promise<UpdateResult> {
-      entity.appUpdatedDate = new Date();
-      entity.appUpdatedBy = updatedBy;
-      return await this.appsRepository.update(entity.appId, entity)
+    async update(appsDto: Apps): Promise<any> {
+      try {
+        const app = await this.appsRepository.findOne(appsDto.appId);
+        if(!app){
+          return {
+            code: 0,
+            data: null,
+            message: 'Ứng dụng không tồn tại.',
+          }
+        }else{
+          app.appCode = appsDto.appCode.trim();
+          app.appName = appsDto.appName.trim();
+          app.appDescription = appsDto.appDescription.trim();
+          app.appPackage = appsDto.appPackage.trim();
+          app.appStatus = appsDto.appStatus;
+          app.appVersion = appsDto.appVersion.trim();
+          app.appUpdatedDate = new Date();
+      
+          try {
+            await this.appsRepository.update(appsDto.appId, app);
+            return {
+              code: 1,
+              data: app,
+              message: 'Cập nhật thông tin thành công.',
+            }
+          } catch (error) {
+            return {
+              code: 0,
+              data: null,
+              message: error,
+            }
+          }
+        }
+      } catch (error) {
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        }
+      }
     }
 
     async delete(id): Promise<DeleteResult> {
