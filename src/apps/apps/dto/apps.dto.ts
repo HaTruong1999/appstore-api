@@ -15,6 +15,18 @@ export class AppsDto {
     appDescription: string | null;
 
     @ApiProperty()
+    appFileAndroid: string | null;
+
+    @ApiProperty()
+    appLinkAndroid: string | null;
+
+    @ApiProperty()
+    appFileIOS: string | null;
+
+    @ApiProperty()
+    appLinkIOS: string | null;
+
+    @ApiProperty()
     appVersion: string | null;
 
     @ApiProperty()

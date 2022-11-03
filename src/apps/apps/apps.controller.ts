@@ -11,21 +11,17 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from 'src/ultils/file-upload.utils';
 import { AppsDto } from './dto/apps.dto';
-// import { TransformInterceptor } from 'src/transform.interceptor';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { AvatarDto } from 'src/users/users/dto/users.dto';
 
 @Controller('apps')
 @ApiTags('Apps')
 @ApiBearerAuth()
-// @UseInterceptors(TransformInterceptor)
 export class AppsController {
     constructor(private readonly appsService: AppsService){}
 
   @Post('create')
   @ApiBody({ type: AppsDto })
-  // @ApiCreatedResponse({ description: 'Tạo mới.', type: AppsDto })
-  // @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() appsData: Apps): Promise<any> {
     return this.appsService.create(appsData);
   }
