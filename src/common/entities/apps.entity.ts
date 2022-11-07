@@ -22,8 +22,18 @@ export class Apps{
     @Column("varchar", { name: "app_package", nullable: true, length: 500 })
     appPackage: string | null;
 
-    @Column("varchar", { name: "app_link", nullable: true, length: 500 })
-    appLink: string | null;
+    //file
+    @Column("varchar", { name: "app_file_android", nullable: true, length: 500 })
+    appFileAndroid: string | null;
+
+    @Column("varchar", { name: "app_link_android", nullable: true, length: 500 })
+    appLinkAndroid: string | null;
+
+    @Column("varchar", { name: "app_file_ios", nullable: true, length: 500 })
+    appFileIOS: string | null;
+
+    @Column("varchar", { name: "app_link_ios", nullable: true, length: 500 })
+    appLinkIOS: string | null;
 
     @Column("varchar", { name: "app_system", nullable: true, length: 500 })
     appSystem: string | null;

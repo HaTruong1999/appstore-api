@@ -114,14 +114,16 @@ export class UsersService {
           message: 'Người dùng không tồn tại.',
         }
       }else{
-        user.userCode = usersDto.userCode.trim();
-        user.userPassword = usersDto.userPassword.trim();
-        user.userFullname = usersDto.userFullname.trim();
+        user.userCode = usersDto.userCode ? usersDto.userCode.trim() : '';
+        user.userPassword = usersDto.userPassword ? usersDto.userPassword.trim() : '';
+        user.userFullname = usersDto.userFullname ? usersDto.userFullname.trim() : '';
         user.userPhoneNumber = usersDto.userPhoneNumber;
-        user.userBirthday = new Date(usersDto.userBirthday.toString());
+
+        if(usersDto.userBirthday)
+          user.userBirthday = new Date(usersDto.userBirthday.toString());
         user.userGender = usersDto.userGender;
-        user.userAddress = usersDto.userAddress.trim();
-        user.userEmail = usersDto.userEmail.trim();
+        user.userAddress = usersDto.userAddress ? usersDto.userAddress.trim() : '';
+        user.userEmail = usersDto.userEmail ? usersDto.userEmail.trim() : '';
         user.userActive = usersDto.userActive;
         user.userUpdatedBy =  usersDto.userUpdatedBy;
         user.userUpdatedDate = new Date();

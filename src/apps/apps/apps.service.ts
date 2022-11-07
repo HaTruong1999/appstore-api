@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'src/common/pagination';
-import { AvatarDto } from 'src/users/users/dto/users.dto';
+import { AvatarDto, FileDto } from 'src/users/users/dto/users.dto';
 import { DeleteResult, Like, Repository } from 'typeorm';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsRequestDto } from './dto/apps-request.dto';
 const AVT_PATH = 'uploads/app/avatars/';
+const APP_FILE_PATH = 'uploads/app/files/';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs')
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -94,10 +95,12 @@ export class AppsService {
         }else{
           app.appCode = appsDto.appCode.trim();
           app.appName = appsDto.appName.trim();
-          app.appDescription = appsDto.appDescription.trim();
-          app.appPackage = appsDto.appPackage.trim();
+          app.appDescription = appsDto.appDescription ? appsDto.appDescription.trim() : '';
+          app.appPackage = appsDto.appPackage ? appsDto.appPackage.trim() : '';
+          app.appLinkAndroid = appsDto.appLinkAndroid ? appsDto.appLinkAndroid.trim()  : '';
+          app.appLinkIOS = appsDto.appLinkIOS ? appsDto.appLinkIOS.trim()  : '';
           app.appStatus = appsDto.appStatus;
-          app.appVersion = appsDto.appVersion.trim();
+          app.appVersion = appsDto.appVersion ? appsDto.appVersion.trim() : '';
           app.appUpdatedDate = new Date();
       
           try {
@@ -111,7 +114,7 @@ export class AppsService {
             return {
               code: 0,
               data: null,
-              message: error,
+              message: error.message(),
             }
           }
         }
@@ -162,7 +165,7 @@ export class AppsService {
       }
     }
 
-    async upload(avatar: AvatarDto, file: any) {
+    async uploadAvatar(avatar: AvatarDto, file: any) {
       try {
         const appId = avatar.avatarID;
         let app = await this.appsRepository.findOne(appId);
@@ -199,6 +202,65 @@ export class AppsService {
               avatarSrc: AVT_PATH + file.filename,
             },
             message: "Cập nhật avatar ứng dụng thành công"
+          };
+        }
+  
+      } catch (error) {
+        console.log(error);
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        };
+      }
+    }
+
+    async uploadFile(fileInfo: FileDto, file: any) {
+      try {
+        const appId = fileInfo.fileID;
+        let app = await this.appsRepository.findOne(appId);
+        if(app == null){
+          app = await this.appsRepository.findOne({
+            appCode: fileInfo.fileID
+          });
+        }
+          
+        if (app == null) {
+          // Delete the file
+          await unlinkAsync(file.path)
+          return {
+            code: 0,
+            data: null,
+            message: 'File ID ứng dụng không tồn tại',
+          };
+        } else {
+          let oldAppFile = ''
+          if(fileInfo.fileType == 'ANDROID')
+            oldAppFile = app.appFileAndroid;
+          else
+            oldAppFile = app.appFileIOS;
+
+          // ------- UPDATE FILE PATH ------
+          if(fileInfo.fileType == 'ANDROID')
+            app.appFileAndroid = APP_FILE_PATH + file.filename;
+          else
+            app.appFileIOS = APP_FILE_PATH + file.filename;
+
+          await this.appsRepository.update(app.appId, app);
+          // Delete the file
+          try {
+            await unlinkAsync(oldAppFile);
+          } catch (error) {
+            console.log(error);
+          }
+          
+          return {
+            code: 1,
+            data: {
+              fileID: app.appId,
+              fileSrc: APP_FILE_PATH + file.filename,
+            },
+            message: "Cập nhật file ứng dụng thành công"
           };
         }
   

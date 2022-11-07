@@ -12,7 +12,7 @@ import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from 'src/ultils/file-upload.utils';
 import { AppsDto } from './dto/apps.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
-import { AvatarDto } from 'src/users/users/dto/users.dto';
+import { AvatarDto, FileDto } from 'src/users/users/dto/users.dto';
 
 @Controller('apps')
 @ApiTags('Apps')
@@ -66,10 +66,27 @@ export class AppsController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadedFile(
+  async uploadedAvatar(
     @Body() body: AvatarDto,
     @UploadedFile() file,
   ) {
-    return this.appsService.upload(body, file);
+    return this.appsService.uploadAvatar(body, file);
+  }
+
+  @Post('uploadFile')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/app/files',
+        filename: editFileName,
+      }),
+      //fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadedFile(
+    @Body() body: FileDto,
+    @UploadedFile() file,
+  ) {
+    return this.appsService.uploadFile(body, file);
   }
 }

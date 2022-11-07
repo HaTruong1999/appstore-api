@@ -86,6 +86,10 @@ export class AvatarDto {
   avatarSrc: string;
 }
 
+export class FileDto {
+  fileID: string;
+  fileType: string;
+}
 
 
 
