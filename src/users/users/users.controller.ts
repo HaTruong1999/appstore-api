@@ -47,9 +47,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiParam({ name: 'id', description: 'ID' })
-  // @ApiOkResponse({ description: 'Xoá thành công.', type: UsersDto })
-  remove(@Param('id') id: number) {
-    return this.usersService.remove(id);
+  async delete(@Param('id') id): Promise<any> {
+    return this.usersService.delete(id);
   }
 }

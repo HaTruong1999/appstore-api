@@ -40,7 +40,7 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message(),
       }
     }
   }
@@ -139,7 +139,7 @@ export class UsersService {
           return {
             code: 0,
             data: null,
-            message: error,
+            message: error.message(),
           }
         }
       }
@@ -147,12 +147,12 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message(),
       }
     }
   }
 
-  async remove(id: number): Promise<any> {
+  async delete(id: number): Promise<any> {
     try {
       const users = await this.usersRepository.findOne(id);
       if(users){
@@ -181,7 +181,7 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: 'Xảy ra sự cố:' + error,
+        message: 'Xảy ra sự cố:' + error.message(),
       }
     }
   }
@@ -215,7 +215,7 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message(),
       }
     }
   }

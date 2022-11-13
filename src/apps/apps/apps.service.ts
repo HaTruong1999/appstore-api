@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Pagination } from 'src/common/pagination';
 import { AvatarDto, FileDto } from 'src/users/users/dto/users.dto';
-import { DeleteResult, Like, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsRequestDto } from './dto/apps-request.dto';
 const AVT_PATH = 'uploads/app/avatars/';
@@ -127,8 +127,44 @@ export class AppsService {
       }
     }
 
-    async delete(id): Promise<DeleteResult> {
-      return await this.appsRepository.delete(id);
+    async delete(id: number): Promise<any> {
+      try {
+        const app = await this.appsRepository.findOne(id);
+        if(!app){
+          return {
+            code: 0,
+            data: null,
+            message: 'Ứng dụng không tồn tại.',
+          }
+        }else{
+          try {
+            if(app.appAvatar)
+              await unlinkAsync(app.appAvatar);
+            if(app.appFileAndroid)
+              await unlinkAsync(app.appFileAndroid);
+            if(app.appFileIOS)
+              await unlinkAsync(app.appFileIOS);
+            await this.appsRepository.delete(id);
+            return {
+              code: 1,
+              data: app,
+              message: 'Xoá ứng dụng thành công.',
+            }
+          } catch (error) {
+            return {
+              code: 0,
+              data: null,
+              message: error.message(),
+            }
+          }
+        }
+      } catch (error) {
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        }
+      }
     }
 
     async checkAppCode(appcode: string): Promise<any> {

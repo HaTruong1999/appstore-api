@@ -51,7 +51,7 @@ export class AppsController {
       return this.appsService.update(updateAppsDto);
   }
 
-  @Delete(':id/delete')
+  @Delete(':id')
     async delete(@Param('id') id): Promise<any> {
       return this.appsService.delete(id);
   }  
