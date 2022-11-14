@@ -114,7 +114,7 @@ export class AppsService {
             return {
               code: 0,
               data: null,
-              message: error.message(),
+              message: error,
             }
           }
         }
@@ -154,7 +154,62 @@ export class AppsService {
             return {
               code: 0,
               data: null,
-              message: error.message(),
+              message: error,
+            }
+          }
+        }
+      } catch (error) {
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        }
+      }
+    }
+
+    async deleteFile(data: any): Promise<any> {
+      try {
+        const app = await this.appsRepository.findOne(data.id);
+        if(!app){
+          return {
+            code: 0,
+            data: null,
+            message: 'Ứng dụng không tồn tại.',
+          }
+        }else{
+          try {
+            if(data.type === 'ANDROID'){
+              if(app.appFileAndroid){
+                try {
+                  await unlinkAsync(app.appFileAndroid);
+                  
+                } catch (error) {
+                  console.log(error);
+                }
+                app.appFileAndroid = null;
+                await this.appsRepository.update(app.appId, app);
+              }
+                
+            }else if(data.type === 'IOS'){
+              if(app.appFileIOS)
+                try {
+                  await unlinkAsync(app.appFileIOS);
+                } catch (error) {
+                }
+                app.appFileIOS = null;
+                await this.appsRepository.update(app.appId, app);
+            }
+    
+            return {
+              code: 1,
+              data: app,
+              message: 'Xoá file ứng dụng thành công.',
+            }
+          } catch (error) {
+            return {
+              code: 0,
+              data: null,
+              message: error,
             }
           }
         }

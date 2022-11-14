@@ -51,6 +51,11 @@ export class AppsController {
       return this.appsService.update(updateAppsDto);
   }
 
+  @Patch('deleteFile')
+    async deleteFile(@Body() data: any): Promise<any> {
+      return this.appsService.deleteFile(data);
+  } 
+
   @Delete(':id')
     async delete(@Param('id') id): Promise<any> {
       return this.appsService.delete(id);
