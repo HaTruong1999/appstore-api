@@ -28,7 +28,7 @@ export class AppsController {
 
   @Get()
   @ApiPaginatedResponse(AppsDto)
-  async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<Pagination<Apps>>{
+  async findALL(@Query() paginationRequestDto: PaginationRequestDto): Promise<any>{
     return this.appsService.findAll(paginationRequestDto);
   }
 

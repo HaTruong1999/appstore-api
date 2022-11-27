@@ -5,6 +5,8 @@ import { AvatarDto, FileDto } from 'src/users/users/dto/users.dto';
 import { Like, Repository } from 'typeorm';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsRequestDto } from './dto/apps-request.dto';
+import { Users } from 'src/common/entities/users.entity';
+
 const AVT_PATH = 'uploads/app/avatars/';
 const APP_FILE_PATH = 'uploads/app/files/';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -18,7 +20,9 @@ const unlinkAsync = promisify(fs.unlink)
 export class AppsService {
     constructor(
         @InjectRepository(Apps)
-        private appsRepository: Repository<Apps>
+        private appsRepository: Repository<Apps>,
+        @InjectRepository(Users)
+        private usersRepository: Repository<Users>,
       ) { }
       
     async create(appsData: Apps): Promise<any> {
@@ -63,7 +67,24 @@ export class AppsService {
         if(pagination.sort != null && pagination.sort != '')
           orders = JSON.parse(pagination.sort);
         
-        return paginate<Apps>(this.appsRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
+        const resultTemp = await paginate<Apps>(this.appsRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
+        const result: any = resultTemp.items.map(e => e);
+        if(result){
+          for await (const item of result) {
+            try {
+              if (item.appCreatedBy != null) {
+                item.appCreatedBy = await this.usersRepository.findOne(item.appCreatedBy);
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        }
+
+        return {
+          items: result,
+          meta: resultTemp.meta,
+        };
     }
 
     async findOne(id : number): Promise<any>{
@@ -101,6 +122,10 @@ export class AppsService {
           app.appLinkIOS = appsDto.appLinkIOS ? appsDto.appLinkIOS.trim()  : '';
           app.appStatus = appsDto.appStatus;
           app.appVersion = appsDto.appVersion ? appsDto.appVersion.trim() : '';
+          if(appsDto.appUpdatedBy && typeof appsDto.appUpdatedBy != 'number')
+            app.appUpdatedBy = Number.parseInt(appsDto.appUpdatedBy);
+          else
+            app.appUpdatedBy = appsDto.appUpdatedBy;
           app.appUpdatedDate = new Date();
       
           try {

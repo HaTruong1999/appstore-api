@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity} from "typeorm";
 import { AppTypes } from "./apptypes.entity";
 
 @Entity("apps")
@@ -56,17 +56,17 @@ export class Apps{
     appStatus: number;
 
     @Column("int", { name: "ah_id", nullable: true})
-    appHistoryId: string | null;
+    appHistoryId: number | null;
 
     @Column("datetime", { name: "app_created_date", nullable: true})
     appCreatedDate: Date | null;
 
-    @Column("varchar", { name: "app_created_by", nullable: true, length: 500 })
-    appCreatedBy: string | null;
+    @Column("int", { name: "app_created_by", nullable: true})
+    appCreatedBy: number | null;
 
     @Column("datetime", { name: "app_updated_date", nullable: true})
     appUpdatedDate: Date | null;
 
-    @Column("varchar", { name: "app_updated_by", nullable: true, length: 500 })
-    appUpdatedBy: string | null;
+    @Column("int", { name: "app_updated_by", nullable: true})
+    appUpdatedBy: number | null;
 }
