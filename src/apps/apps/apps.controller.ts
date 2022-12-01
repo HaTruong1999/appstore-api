@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { Pagination, PaginationRequestDto } from 'src/common/pagination';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { PaginationRequestDto } from 'src/common/pagination';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsService } from './apps.service';
 import {
@@ -13,12 +13,22 @@ import { editFileName, imageFileFilter } from 'src/ultils/file-upload.utils';
 import { AppsDto } from './dto/apps.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { AvatarDto, FileDto } from 'src/users/users/dto/users.dto';
+import { JwtAuthGuard } from 'src/auth/auth/guard/jwt-auth.guard';
 
 @Controller('apps')
+@UseGuards(JwtAuthGuard)
 @ApiTags('Apps')
 @ApiBearerAuth()
 export class AppsController {
-    constructor(private readonly appsService: AppsService){}
+  constructor(private readonly appsService: AppsService){}
+
+  // =========== Data Normalization ===========
+  @Get('synchDataApps')
+  synchDataApps(): Promise<any> {
+    return this.appsService.synchDataApps();
+  }
+
+  // ==========================================
 
   @Post('create')
   @ApiBody({ type: AppsDto })
@@ -33,9 +43,7 @@ export class AppsController {
   }
 
   @Get('checkAppCode')
-  checkUserCode(
-    @Query('appcode') appcode: string,
-  ): Promise<any> {
+  checkAppCode(@Query('appcode') appcode: string): Promise<any> {
     return this.appsService.checkAppCode(appcode);
   }
 
@@ -52,13 +60,13 @@ export class AppsController {
   }
 
   @Patch('deleteFile')
-    async deleteFile(@Body() data: any): Promise<any> {
-      return this.appsService.deleteFile(data);
+  async deleteFile(@Body() data: any): Promise<any> {
+    return this.appsService.deleteFile(data);
   } 
 
   @Delete(':id')
-    async delete(@Param('id') id): Promise<any> {
-      return this.appsService.delete(id);
+  async delete(@Param('id') id): Promise<any> {
+    return this.appsService.delete(id);
   }  
 
   @Post('changeAvatar')
@@ -94,4 +102,5 @@ export class AppsController {
   ) {
     return this.appsService.uploadFile(body, file);
   }
+
 }

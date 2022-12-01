@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
-import e = require('express');
 import { AppTypes } from 'src/common/entities/apptypes.entity';
 import { paginate, Pagination } from 'src/common/pagination';
 import { Like, Repository } from 'typeorm';
-import { UpdateResult, DeleteResult } from 'typeorm';import { AppTypesRequestDto } from './dto/apptypes-request.dto';
-import { AppTypesDto } from './dto/apptypes.dto';
-;
+import { DeleteResult } from 'typeorm';import { AppTypesRequestDto } from './dto/apptypes-request.dto';
 
 @Injectable()
 export class ApptypesService {
@@ -33,28 +30,165 @@ export class ApptypesService {
           };
         }
     
-         let orders = { atName: "DESC"};
+        let orders = { atName: "DESC"};
         if(pagination.sort != null && pagination.sort != '')
           orders = JSON.parse(pagination.sort);
-        return paginate<AppTypes>(this.apptypesRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
+
+        // Handle before return
+        const resultTemp = await paginate<AppTypes>(this.apptypesRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
+        const result: any = resultTemp.items.map(e => e);
+
+        return {
+          items: result,
+          meta: resultTemp.meta,
+        };
   }
 
   async findOne(id: number){
-    return this.apptypesRepository.findOne(id);
+    const data = await this.apptypesRepository.findOne(id);
+    if(data){
+      return {
+        code: 1,
+        data: data,
+        message: 'Lấy thông tin thành công.',
+      }
+    }else{
+      return {
+        code: 0,
+        data: null,
+        message: 'Mã dụng không tồn tại.',
+      }
+    }
   }
 
-  async create(entity: AppTypes, createdBy): Promise<AppTypes> {
-    entity.atCreatedBy = createdBy;
-    return await this.apptypesRepository.save(entity);
+  async create(data: AppTypes): Promise<any> {
+    data.atCreatedDate = new Date();
+    data.atUpdatedDate = new Date();
+    try {
+      const apptype = await this.apptypesRepository.save(data);
+
+      return {
+        code: 1,
+        data: apptype,
+        message: 'Tạo mới thành công.',
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error,
+      }
+    }
   }
 
-  async update(entity: AppTypes, updatedBy: string): Promise<UpdateResult> {
-    entity.atUpdatedDate = new Date();
-    entity.atUpdatedBy = updatedBy;
-    return await this.apptypesRepository.update(entity.atId, entity)
+  async update(data: AppTypes): Promise<any> {
+    try {
+      const apptype = await this.apptypesRepository.findOne(data.atId);
+      if(!apptype){
+        return {
+          code: 0,
+          data: null,
+          message: 'Ứng dụng không tồn tại.',
+        }
+      }else{
+        apptype.atCode = data.atCode.trim();
+        apptype.atName = data.atName.trim();
+        apptype.atDescription = data.atDescription ? data.atDescription.trim() : '';
+        apptype.atStatus = data.atStatus;
+        
+        if(apptype.atUpdatedBy)
+          apptype.atUpdatedBy = data.atUpdatedBy;
+        apptype.atUpdatedDate = new Date();
+    
+        try {
+          await this.apptypesRepository.update(data.atId, apptype);
+          return {
+            code: 1,
+            data: apptype,
+            message: 'Cập nhật thông tin thành công.',
+          }
+        } catch (error) {
+          return {
+            code: 0,
+            data: null,
+            message: error,
+          }
+        }
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error,
+      }
+    }
   }
 
-  async delete(id): Promise<DeleteResult> {
-    return await this.apptypesRepository.delete(id);
+  async delete(id): Promise<any> {
+    try {
+      const data = await this.apptypesRepository.findOne(id);
+      if(!data){
+        return {
+          code: 0,
+          data: null,
+          message: 'Ứng dụng không tồn tại.',
+        }
+      }else{
+        try {
+          await this.apptypesRepository.delete(id);
+          return {
+            code: 1,
+            data: data,
+            message: 'Xoá ứng dụng thành công.',
+          }
+        } catch (error) {
+          return {
+            code: 0,
+            data: null,
+            message: error,
+          }
+        }
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error,
+      }
+    }
+  }
+
+  async checkAppTypeCode(appTypeCode: string): Promise<any> {
+    try {
+      const user = await this.apptypesRepository.findOne({
+        atCode: appTypeCode
+      });
+  
+      if(user){
+        return {
+          code: 1,
+          data: {
+            atCode: appTypeCode,
+            isExisted: true,
+          },
+          message: 'Mã ứng dụng đã tồn tại.',
+        }
+      }else{
+        return {
+          code: 1,
+          data: {
+            atCode: appTypeCode,
+            isExisted: false,
+          },
+          message: 'Mã ứng dụng hợp lệ.',
+        }
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error,
+      }
+    }
   }
 }
