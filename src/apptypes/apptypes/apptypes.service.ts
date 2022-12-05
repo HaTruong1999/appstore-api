@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm'
 import { AppTypes } from 'src/common/entities/apptypes.entity';
-import { paginate, Pagination } from 'src/common/pagination';
+import { paginate } from 'src/common/pagination';
 import { Like, Repository } from 'typeorm';
-import { DeleteResult } from 'typeorm';import { AppTypesRequestDto } from './dto/apptypes-request.dto';
+import { AppTypesRequestDto } from './dto/apptypes-request.dto';
 
 @Injectable()
 export class ApptypesService {
@@ -12,36 +12,49 @@ export class ApptypesService {
     private apptypesRepository: Repository<AppTypes>
   ) { }
 
-  async findAll(pagination: AppTypesRequestDto): Promise<Pagination<AppTypes>>{
-    const search = pagination.search != null ? "%" + pagination.search.replace(' ', '%') + '%' : '';
-        let filters = {};
-        const listF = [];
-        //Có tìm kiếm
-        if(search != '')
-        {
-            listF.push({ atName: Like(search) });
-            listF.push({ atDescription: Like(search) });
-        }
-    
-        if(listF.length > 0)
-        {
-          filters = { 
-            where: listF
-          };
-        }
-    
-        let orders = { atName: "DESC"};
-        if(pagination.sort != null && pagination.sort != '')
-          orders = JSON.parse(pagination.sort);
+  async findAll(pagination: AppTypesRequestDto): Promise<any>{
+    try {
+      const search = pagination.search != null ? "%" + pagination.search.replace(' ', '%') + '%' : '';
+      let filters = {};
+      const listF = [];
+      //Có tìm kiếm
+      if(search != '')
+      {
+          listF.push({ atName: Like(search) });
+          listF.push({ atDescription: Like(search) });
+      }
 
-        // Handle before return
-        const resultTemp = await paginate<AppTypes>(this.apptypesRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
-        const result: any = resultTemp.items.map(e => e);
-
-        return {
-          items: result,
-          meta: resultTemp.meta,
+      if(listF.length > 0)
+      {
+        filters = { 
+          where: listF
         };
+      }
+
+      let orders = { atName: "DESC"};
+      if(pagination.sort != null && pagination.sort != '')
+        orders = JSON.parse(pagination.sort);
+
+      // Handle before return
+      const resultTemp = await paginate<AppTypes>(this.apptypesRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
+      const result: any = resultTemp.items.map(e => e);
+
+      return {
+        code: 1,
+        data: {
+          items: result,
+          meta: resultTemp.meta
+        },
+        message: "Lấy danh sách loại ứng dụng thành công."
+      };
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error
+      };
+    }
+    
   }
 
   async findOne(id: number){
@@ -160,11 +173,11 @@ export class ApptypesService {
 
   async checkAppTypeCode(appTypeCode: string): Promise<any> {
     try {
-      const user = await this.apptypesRepository.findOne({
+      const apptype = await this.apptypesRepository.findOne({
         atCode: appTypeCode
       });
   
-      if(user){
+      if(apptype){
         return {
           code: 1,
           data: {

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApptypesModule } from './apptypes/apptypes.module';
+import { WorkplacesModule } from './workplaces/workplaces.module';
 //import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppsModule } from './apps/apps.module';
 import { UsersModule } from './users/users.module';
@@ -15,16 +16,18 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', ''),
     }),
-    ApptypesModule,
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    AuthModule,
     AppsModule,
     UsersModule,
-    AuthModule,
+    ApptypesModule,
+    WorkplacesModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

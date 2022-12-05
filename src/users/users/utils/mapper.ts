@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Users } from "src/common/entities/users.entity";
 import { UsersDto } from "../dto/users.dto";
 
@@ -20,7 +21,7 @@ export const toUsersDto = (data: Users): UsersDto => {
         userUpdatedBy, 
     } = data;
   
-    let Users: UsersDto = {
+    const Users: UsersDto = {
         userId,
         userCode,
         userBirthday,
