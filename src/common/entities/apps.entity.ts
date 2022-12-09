@@ -22,6 +22,9 @@ export class Apps{
     @Column("varchar", { name: "app_package", nullable: true, length: 500 })
     appPackage: string | null;
 
+    @Column("int", { name: "app_workplace_id", nullable: true })
+    appWorkplaceId: number;
+
     //file
     @Column("varchar", { name: "app_file_android", nullable: true, length: 500 })
     appFileAndroid: string | null;

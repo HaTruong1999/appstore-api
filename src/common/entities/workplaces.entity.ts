@@ -15,6 +15,12 @@ export class Workplaces{
     @Column("int", { name: "wp_parent", nullable: true})
     wpParent: number | null;
 
+    @Column("int", { name: "wp_order", nullable: true})
+    wpOrder: number;
+
+    @Column("int", { name: "wp_node", nullable: true})
+    wpNode: number;
+
     @Column("int", { name: "wp_status", nullable: true})
     wpStatus: number;
 

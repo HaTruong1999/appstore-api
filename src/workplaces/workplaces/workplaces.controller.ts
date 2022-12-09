@@ -27,9 +27,9 @@ export class WorkplacesController {
     return this.workplacesService.checkWorkplacesCode(wpCode);
   }
 
-  @Get('getListWorkplaces')
-  getListWorkplaces(): Promise<any> {
-    return this.workplacesService.getListWorkplaces();
+  @Get('getListWorkplacesAsTree')
+  getListWorkplacesAsTree(): Promise<any> {
+    return this.workplacesService.getListWorkplacesAsTree();
   }
 
   @Post('create')

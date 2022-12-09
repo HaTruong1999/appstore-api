@@ -14,6 +14,12 @@ export class WorkplacesDto {
   wpParent: number | null;
 
   @ApiProperty()
+  wpOrder: number;
+
+  @ApiProperty()
+  wpNode: number;
+
+  @ApiProperty()
   wpStatus: number;
 
   @ApiProperty()

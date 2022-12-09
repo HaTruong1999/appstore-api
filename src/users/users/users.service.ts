@@ -125,6 +125,7 @@ export class UsersService {
         user.userAddress = usersDto.userAddress ? usersDto.userAddress.trim() : '';
         user.userEmail = usersDto.userEmail ? usersDto.userEmail.trim() : '';
         user.userActive = usersDto.userActive;
+        user.userWorkplaceId = usersDto.userWorkplaceId;
         user.userUpdatedBy =  usersDto.userUpdatedBy;
         user.userUpdatedDate = new Date();
     

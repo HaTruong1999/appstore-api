@@ -36,6 +36,9 @@ export class Users {
     @Column("int", { name: "user_active", nullable: true })
     userActive: number;
 
+    @Column("int", { name: "user_workplace_id", nullable: true })
+    userWorkplaceId: number;
+
     @Column("datetime", { name: "user_created_date", nullable: true })
     userCreatedDate: Date | null;
 

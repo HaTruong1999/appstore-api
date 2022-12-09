@@ -122,6 +122,7 @@ export class AppsService {
         app.appLinkAndroid = appsDto.appLinkAndroid ? appsDto.appLinkAndroid.trim()  : '';
         app.appLinkIOS = appsDto.appLinkIOS ? appsDto.appLinkIOS.trim()  : '';
         app.appStatus = appsDto.appStatus;
+        app.appWorkplaceId= appsDto.appWorkplaceId;
         app.appVersion = appsDto.appVersion ? appsDto.appVersion.trim() : '';
         if(appsDto.appUpdatedBy && typeof appsDto.appUpdatedBy != 'number')
           app.appUpdatedBy = Number.parseInt(appsDto.appUpdatedBy);

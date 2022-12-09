@@ -18,65 +18,67 @@ export class WorkplacesService {
     this.notFoundMessage = 'Không tìm thấy';
   }
 
-    async create(data: Workplaces): Promise<any> {
-        data.wpCreatedDate = data.wpUpdatedDate = new Date();
-        try {
-            const wp = await this.workplacesRepository.save(data);
+  async create(data: Workplaces): Promise<any> {
+      data.wpCreatedDate = data.wpUpdatedDate = new Date();
+      try {
+          const wp = await this.workplacesRepository.save(data);
 
-            return {
-                code: 1,
-                data: wp,
-                message: 'Tạo mới thành công.',
-            }
-        } catch (error) {
-            return {
-                code: 0,
-                data: null,
-                message: error.message(),
-            }
-        }
-    }
-
-    async update(workplacesDto: WorkplacesDto): Promise<any> {
-        try {
-          const wp = await this.workplacesRepository.findOne(workplacesDto.wpId);
-          if(!wp){
-            return {
+          return {
+              code: 1,
+              data: wp,
+              message: 'Tạo mới thành công.',
+          }
+      } catch (error) {
+          return {
               code: 0,
               data: null,
-              message: 'Người dùng không tồn tại.',
-            }
-          }else{
-            wp.wpCode = workplacesDto.wpCode ? workplacesDto.wpCode.trim() : '';
-            wp.wpName = workplacesDto.wpName ? workplacesDto.wpName.trim() : '';
-            wp.wpParent = workplacesDto.wpParent;
-            wp.wpStatus = workplacesDto.wpStatus;
-            wp.wpUpdatedBy = workplacesDto.wpUpdatedBy;
-            wp.wpUpdatedDate = new Date();
-        
-            try {
-              await this.workplacesRepository.update(workplacesDto.wpId, wp);
-              return {
-                code: 1,
-                data: wp,
-                message: 'Cập nhật thông tin thành công.',
-              }
-            } catch (error) {
-              return {
-                code: 0,
-                data: null,
-                message: error,
-              }
-            }
+              message: error.message(),
           }
-        } catch (error) {
+      }
+  }
+
+  async update(workplacesDto: WorkplacesDto): Promise<any> {
+      try {
+        const wp = await this.workplacesRepository.findOne(workplacesDto.wpId);
+        if(!wp){
           return {
             code: 0,
             data: null,
-            message: error,
+            message: 'Người dùng không tồn tại.',
+          }
+        }else{
+          wp.wpCode = workplacesDto.wpCode ? workplacesDto.wpCode.trim() : '';
+          wp.wpName = workplacesDto.wpName ? workplacesDto.wpName.trim() : '';
+          wp.wpParent = workplacesDto.wpParent;
+          wp.wpNode = workplacesDto.wpNode;
+          wp.wpOrder = workplacesDto.wpOrder;
+          wp.wpStatus = workplacesDto.wpStatus;
+          wp.wpUpdatedBy = workplacesDto.wpUpdatedBy;
+          wp.wpUpdatedDate = new Date();
+      
+          try {
+            await this.workplacesRepository.update(workplacesDto.wpId, wp);
+            return {
+              code: 1,
+              data: wp,
+              message: 'Cập nhật thông tin thành công.',
+            }
+          } catch (error) {
+            return {
+              code: 0,
+              data: null,
+              message: error,
+            }
           }
         }
-    }
+      } catch (error) {
+        return {
+          code: 0,
+          data: null,
+          message: error,
+        }
+      }
+  }
 
   async findAll(pagination: WorkplacesRequestDto): Promise<any> {
     try {
@@ -101,7 +103,17 @@ export class WorkplacesService {
       
       // Handle before return
       const resultTemp = await paginate<Workplaces>(this.workplacesRepository, { page: pagination.page, limit: pagination.limit }, filters, orders);
-      const result: any = resultTemp.items.map(e => e);
+      const result: any[] = resultTemp.items.map(e => ({...e, numberChild: 0}));
+
+      for(let i = 0; i < result.length; i++){
+        let numberChild = 0;
+        const arrChild = await this.workplacesRepository.find({
+          wpParent: result[i].wpId
+        });
+        
+        if(arrChild) numberChild = arrChild.length;
+        result[i].numberChild = numberChild;
+      }
 
       return {
         code: 1,
@@ -118,9 +130,9 @@ export class WorkplacesService {
         message: error
       };
     }
-}
+  }
 
-async checkWorkplacesCode(wpCode: string): Promise<any> {
+  async checkWorkplacesCode(wpCode: string): Promise<any> {
     try {
       const wp = await this.workplacesRepository.findOne({
         wpCode: wpCode
@@ -205,14 +217,27 @@ async checkWorkplacesCode(wpCode: string): Promise<any> {
       }
   }
 
-  async getListWorkplaces(): Promise<any> {
+  async getListWorkplacesAsTree(): Promise<any> {
     try {
       const data = await this.workplacesRepository.find();
   
       if(data){
+        //map data to trees
+        const dataTree = data.map((e) => ({
+          ...e,
+          children: [],
+        }))
+
+        const nodeRoot = {
+          wpId: null,
+          wpParent: '',
+          children: []
+        }
+
+        this.mapTree(nodeRoot,dataTree);
         return {
           code: 1,
-          data: data,
+          data: nodeRoot.children,
           message: 'Lấy dữ liệu thành công.',
         }
       }else{
@@ -229,6 +254,16 @@ async checkWorkplacesCode(wpCode: string): Promise<any> {
         message: error,
       }
     }
+  }
+
+  mapTree(node: any, data: any[]): any{
+    data.forEach(element => {
+      if(element.wpParent ===  node.wpId){
+        node.children.push(element);
+        this.mapTree(element, data);
+      }
+    });
+    return node;
   }
 }
 

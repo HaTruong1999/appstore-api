@@ -45,15 +45,16 @@ export class AppsDto {
     appWpId: string | null;
 
     @ApiProperty()
-    @IsNumber()
     appTypeId: number | null;
 
     @ApiProperty()
     appAvatar: string | null;
 
     @ApiProperty()
-    @IsNumber()
     appStatus: number;
+
+    @ApiProperty()
+    appWorkplaceId: number;
 
     @ApiProperty()
     appHistoryId: string | null;
