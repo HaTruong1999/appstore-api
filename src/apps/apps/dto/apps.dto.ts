@@ -56,6 +56,9 @@ export class AppsDto {
     appWorkplaceId: number;
 
     @ApiProperty()
+    appNumberDownloads: number;
+
+    @ApiProperty()
     appHistoryId: string | null;
 
     @ApiProperty()

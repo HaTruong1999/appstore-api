@@ -93,7 +93,7 @@ export class AuthService {
         data: {
           accessToken: "",
         },
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -157,7 +157,7 @@ export class AuthService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -246,7 +246,7 @@ export class AuthService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       };
     }
   }

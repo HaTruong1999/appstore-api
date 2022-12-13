@@ -4,7 +4,6 @@ import { Apps } from '../../common/entities/apps.entity';
 import { AppsService } from './apps.service';
 import {
   ApiBearerAuth,
-  ApiTags,
   ApiBody
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
@@ -15,10 +14,10 @@ import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-respon
 import { AvatarDto, FileDto } from 'src/users/users/dto/users.dto';
 import { JwtAuthGuard } from 'src/auth/auth/guard/jwt-auth.guard';
 
-@Controller('apps')
+
 @UseGuards(JwtAuthGuard)
-@ApiTags('Apps')
 @ApiBearerAuth()
+@Controller('apps')
 export class AppsController {
   constructor(private readonly appsService: AppsService){}
 
@@ -34,6 +33,11 @@ export class AppsController {
   @ApiBody({ type: AppsDto })
   async create(@Body() appsData: Apps): Promise<any> {
     return this.appsService.create(appsData);
+  }
+
+  @Post('getStatisticDashboard')
+  async getStatisticDashboard(@Body() data: any): Promise<any> {
+    return this.appsService.getStatisticDashboard(data);
   }
 
   @Get()
@@ -79,6 +83,7 @@ export class AppsController {
       fileFilter: imageFileFilter,
     }),
   )
+
   async uploadedAvatar(
     @Body() body: AvatarDto,
     @UploadedFile() file,
@@ -93,7 +98,6 @@ export class AppsController {
         destination: './uploads/app/files',
         filename: editFileName,
       }),
-      //fileFilter: imageFileFilter,
     }),
   )
   async uploadedFile(

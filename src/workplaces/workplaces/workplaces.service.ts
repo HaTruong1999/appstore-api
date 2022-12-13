@@ -32,7 +32,7 @@ export class WorkplacesService {
           return {
               code: 0,
               data: null,
-              message: error.message(),
+              message: error.message,
           }
       }
   }
@@ -67,7 +67,7 @@ export class WorkplacesService {
             return {
               code: 0,
               data: null,
-              message: error,
+              message: error.message,
             }
           }
         }
@@ -75,7 +75,7 @@ export class WorkplacesService {
         return {
           code: 0,
           data: null,
-          message: error,
+          message: error.message,
         }
       }
   }
@@ -127,7 +127,7 @@ export class WorkplacesService {
       return {
         code: 0,
         data: null,
-        message: error
+        message: error.message
       };
     }
   }
@@ -161,7 +161,7 @@ export class WorkplacesService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -204,7 +204,7 @@ export class WorkplacesService {
             return {
               code: 0,
               data: null,
-              message: error,
+              message: error.message,
             }
           }
         }
@@ -212,7 +212,7 @@ export class WorkplacesService {
         return {
           code: 0,
           data: null,
-          message: error,
+          message: error.message,
         }
       }
   }
@@ -251,7 +251,7 @@ export class WorkplacesService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }

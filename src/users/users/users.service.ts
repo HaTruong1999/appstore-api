@@ -40,7 +40,7 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: error.message(),
+        message: error.message,
       }
     }
   }
@@ -140,7 +140,7 @@ export class UsersService {
           return {
             code: 0,
             data: null,
-            message: error.message(),
+            message: error.message,
           }
         }
       }
@@ -148,7 +148,7 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: error.message(),
+        message: error.message,
       }
     }
   }
@@ -216,7 +216,7 @@ export class UsersService {
       return {
         code: 0,
         data: null,
-        message: error.message(),
+        message: error.message,
       }
     }
   }

@@ -25,6 +25,9 @@ export class Apps{
     @Column("int", { name: "app_workplace_id", nullable: true })
     appWorkplaceId: number;
 
+    @Column("int", { name: "app_number_downloads", nullable: true, default: 0})
+    appNumberDownloads: number | null;
+
     //file
     @Column("varchar", { name: "app_file_android", nullable: true, length: 500 })
     appFileAndroid: string | null;

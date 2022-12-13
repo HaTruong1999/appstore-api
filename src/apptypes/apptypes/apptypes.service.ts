@@ -51,7 +51,7 @@ export class ApptypesService {
       return {
         code: 0,
         data: null,
-        message: error
+        message: error.message
       };
     }
     
@@ -89,7 +89,7 @@ export class ApptypesService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -124,7 +124,7 @@ export class ApptypesService {
           return {
             code: 0,
             data: null,
-            message: error,
+            message: error.message,
           }
         }
       }
@@ -132,7 +132,7 @@ export class ApptypesService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -158,7 +158,7 @@ export class ApptypesService {
           return {
             code: 0,
             data: null,
-            message: error,
+            message: error.message,
           }
         }
       }
@@ -166,7 +166,7 @@ export class ApptypesService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -200,7 +200,7 @@ export class ApptypesService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }

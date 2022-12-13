@@ -6,6 +6,8 @@ import { Like, Repository } from 'typeorm';
 import { Apps } from '../../common/entities/apps.entity';
 import { AppsRequestDto } from './dto/apps-request.dto';
 import { Users } from 'src/common/entities/users.entity';
+import { Workplaces } from 'src/common/entities/workplaces.entity';
+
 
 const AVT_PATH = 'uploads/app/avatars/';
 const APP_FILE_PATH = 'uploads/app/files/';
@@ -23,6 +25,8 @@ export class AppsService {
       private appsRepository: Repository<Apps>,
       @InjectRepository(Users)
       private usersRepository: Repository<Users>,
+      @InjectRepository(Workplaces)
+      private workplacesRepository: Repository<Workplaces>,
     ) { }
     
   async create(appsData: Apps): Promise<any> {
@@ -40,7 +44,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -141,7 +145,7 @@ export class AppsService {
           return {
             code: 0,
             data: null,
-            message: error,
+            message: error.message,
           }
         }
       }
@@ -149,7 +153,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -181,7 +185,7 @@ export class AppsService {
           return {
             code: 0,
             data: null,
-            message: error,
+            message: error.message,
           }
         }
       }
@@ -189,7 +193,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -236,7 +240,7 @@ export class AppsService {
           return {
             code: 0,
             data: null,
-            message: error,
+            message: error.message,
           }
         }
       }
@@ -244,7 +248,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -278,7 +282,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       }
     }
   }
@@ -328,7 +332,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       };
     }
   }
@@ -387,7 +391,7 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
       };
     }
   }
@@ -399,8 +403,7 @@ export class AppsService {
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       apps.forEach(async e => {
-        e.appCreatedBy = 1;
-        e.appUpdatedBy = 1;
+        e.appNumberDownloads = 2;
         await this.appsRepository.update(e.appId, e);
       })
 
@@ -413,7 +416,100 @@ export class AppsService {
       return {
         code: 0,
         data: null,
-        message: error,
+        message: error.message,
+      }
+    }
+  }
+
+  async getStatisticDashboard(data: any): Promise<any> {
+    try {
+      const arrWorkplaceId = data.wpIds;
+      let numberOfApp = 0;
+      let numberDownloads = 0;
+      let numberOfUser = 0;
+      let newUserInWeek = 0;
+      const detailWorkplace: any[] = [];
+
+      if(arrWorkplaceId){
+        for(let i = 0; i < arrWorkplaceId.length; i ++){
+          //Get number of app
+          const conditionApp = {
+            appWorkplaceId: arrWorkplaceId[i],
+          };
+
+          const countApp = await this.appsRepository.count(conditionApp);
+          numberOfApp += countApp;
+
+          //Get number of downloads
+          const result = await this.appsRepository
+            .createQueryBuilder('app')
+            .where(`app.appWorkplaceId = ${arrWorkplaceId[i]}`)
+            .select('SUM(app.appNumberDownloads)', 'countNumberDownloads')
+            .getRawOne()
+          numberDownloads += result.countNumberDownloads;
+
+          //Get number of user
+          const conditionUser = {
+            userWorkplaceId: arrWorkplaceId[i],
+          };
+
+          const countUser = await this.usersRepository.count(conditionUser);
+          numberOfUser += countUser;
+          
+          //New user in week
+          let today = new Date();
+          const diffStart = today.getDate() - today.getDay() + (today.getDay() == 0 ? -6 : 1);
+          const startDate = new Date(today.setDate(diffStart));
+          
+          today = new Date();
+          const diffEnd = today.getDate() - today.getDay() + (today.getDay() == 0 ? 0 : 7);
+          const endDate = new Date(today.setDate(diffEnd));
+   
+          const tempCountUserInWeek = await this.usersRepository.createQueryBuilder('user')
+            .where(`user.userWorkplaceId = ${arrWorkplaceId[i]} AND user.userCreatedDate BETWEEN '${startDate.toISOString()}' AND '${endDate.toISOString()}'`)
+            .getCount();
+          
+          if(tempCountUserInWeek > 0) newUserInWeek += tempCountUserInWeek;
+
+          //Detail app by workplace
+          const conditionWorkplace = {
+            wpId: arrWorkplaceId[i]
+          }
+
+          const workplace = await this.workplacesRepository.find({
+            select: ['wpId', 'wpCode', 'wpName'],
+            where: conditionWorkplace
+          } as any);
+
+          const tempWorkplace: any = {
+            ...workplace[0],
+            countApp: countApp,
+            numberDownloads: result.countNumberDownloads,
+            countUser: countUser,
+          }
+
+          detailWorkplace.push(tempWorkplace);
+        }
+      }
+
+      const result = {
+        numberOfApp: numberOfApp,
+        numberDownloads: numberDownloads,
+        numberOfUser: numberOfUser,
+        newUserInWeek: newUserInWeek,
+        workplaces: detailWorkplace,
+      }
+
+      return {
+        code: 1,
+        data: result,
+        message: 'Successfuly',
+      }
+    } catch (error) {
+      return {
+        code: 0,
+        data: null,
+        message: error.message,
       }
     }
   }
