@@ -23,6 +23,12 @@ export class AuthController {
     return this.authService.sign(authDto);
   }
 
+  @Post('getAdminToken')
+  @ApiBody({ type: AuthDto })
+  async getAdminToken(@Body() authDto: AuthDto) {
+    return this.authService.signAdminToken(authDto);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('checkToken')
   async checkToken(@Request() req: any) {

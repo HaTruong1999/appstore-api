@@ -78,6 +78,7 @@ export class AuthService {
         userFullname: user.userFullname,
         userPhonenumber: user.userPhonenumber,
       };
+
       return {
         code: 1,
         data: {
@@ -87,6 +88,43 @@ export class AuthService {
         },
         message: "Đăng nhập thành công!",
       };
+    } catch (error) {
+      return {
+        code: 0,
+        data: {
+          accessToken: "",
+        },
+        message: error.message,
+      }
+    }
+  }
+
+  async signAdminToken(userDto: any) {
+    try {
+      if(userDto.username === 'administrator' && userDto.password === '***'){
+        const payload = {
+          userCode: userDto.username,
+          userName: userDto.username,
+          sub: '***',
+          userFullname:'administrator',
+        };
+  
+        return {
+          code: 1,
+          data: {
+            accessToken: this.jwtService.sign(payload),
+            userFullname: payload.userFullname,
+          },
+          message: "Lấy thông tin quản trị thành công!",
+        };
+      }else{
+        return {
+          code: 0,
+          data: null,
+          message: "Lấy thông tin quản trị thất bại!",
+        };
+      }
+      
     } catch (error) {
       return {
         code: 0,
